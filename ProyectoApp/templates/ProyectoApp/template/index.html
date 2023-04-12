@@ -1,0 +1,412 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    {% load static %}
+
+  <!-- Required meta tags -->
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+  <title>Star Admin2 </title>
+  <script src="https://code.jquery.com/jquery-3.4.1.min.js" integrity="sha256-CSXorXvZcTkaix6Yvo6HppcZGetbYMGWSFlBw8HfCJo=" crossorigin="anonymous"></script>
+  <!-- plugins:css -->
+  <link rel="stylesheet" href="{% static 'ProyectoApp/vendors/feather/feather.css' %}">
+  <link rel="stylesheet" href="{% static 'ProyectoApp/vendors/mdi/css/materialdesignicons.min.css' %}">
+  <link rel="stylesheet" href="{% static 'ProyectoApp/vendors/ti-icons/css/themify-icons.css' %}">
+  <link rel="stylesheet" href="{% static 'ProyectoApp/vendors/typicons/typicons.css' %}">
+  <link rel="stylesheet" href="{% static 'ProyectoApp/vendors/simple-line-icons/css/simple-line-icons.css' %}">
+  <link rel="stylesheet" href="{% static 'ProyectoApp/vendors/css/vendor.bundle.base.css' %}">
+  <!-- endinject -->
+  <!-- Plugin css for this page -->
+  <link rel="stylesheet" href="{% static 'ProyectoApp/vendors/datatables.net-bs4/dataTables.bootstrap4.css' %}">
+  <link rel="stylesheet" href="{% static 'ProyectoApp/js/select.dataTables.min.css' %}">
+  <!-- End plugin css for this page -->
+  <!-- inject:css -->
+  <link rel="stylesheet" href="{% static 'ProyectoApp/css/vertical-layout-light/style.css' %}">
+  <!-- endinject -->
+  <link rel="shortcut icon" href="{% static 'ProyectoApp/images/favicon.png' %}" />
+</head>
+
+<body>
+  <div class="container-scroller"> 
+    <!-- partial:partials/_navbar.html -->
+    <nav class="navbar default-layout col-lg-12 col-12 p-0 fixed-top d-flex align-items-top flex-row">
+      <!-- Icono barra lateral -->
+      <div class="text-center navbar-brand-wrapper d-flex align-items-center justify-content-start">
+        <div class="me-3">
+          <button class="navbar-toggler navbar-toggler align-self-center" type="button" data-bs-toggle="minimize">
+            <span class="icon-menu"></span>
+          </button>
+        </div>
+        <div>
+          <a class="navbar-brand brand-logo" href="index.html">
+            <img src="{% static 'ProyectoApp/images/logo.svg'%}" alt="logo" />
+          </a>
+          <a class="navbar-brand brand-logo-mini" href="index.html">
+            <img src="{% static 'ProyectoApp/images/logo-mini.svg'%}" alt="logo" />
+          </a>
+        </div>
+      </div>
+      <!-- Fin icono barra lateral -->
+
+      <div class="navbar-menu-wrapper d-flex align-items-top"> 
+
+        <!--Mensaje de bienvenida-->
+        <ul class="navbar-nav">
+          <li class="nav-item font-weight-semibold d-none d-lg-block ms-0">
+            <h1 class="welcome-text">{{mensaje_hora}}, <span class="text-black fw-bold"> {{username}}</span></h1>
+            <h3 class="welcome-sub-text">¡Nos alegra tenerte de vuelta! </h3>
+          </li>
+        </ul>
+        <!--Fin de mensaje de bienvenida-->
+        
+        <ul class="navbar-nav ms-auto">
+          <!--Calendario-->
+          <li class="nav-item d-none d-lg-block">
+            <div id="datepicker-popup" class="input-group date datepicker navbar-date-picker">
+              <span class="input-group-addon input-group-prepend border-right">
+                <span class="icon-calendar input-group-text calendar-icon"></span>
+              </span>
+              <input type="text" class="form-control">
+            </div>
+          </li>
+          <!--Fin calendario-->
+
+          <!--Fotografia usario-->
+          <!--<li class="nav-item dropdown d-none d-lg-block user-dropdown">
+            <a class="nav-link" id="UserDropdown" href="#" data-bs-toggle="dropdown" aria-expanded="false">
+              <img class="img-xs rounded-circle" src="{% static 'ProyectoApp/images/faces/face8.jpg' %}" alt="Profile image"> </a>
+            <div class="dropdown-menu dropdown-menu-right navbar-dropdown" aria-labelledby="UserDropdown">
+              <div class="dropdown-header text-center">
+                <img class="img-md rounded-circle" src="{% static 'ProyectoApp/images/faces/face8.jpg' %}" alt="Profile image">
+                <p class="mb-1 mt-3 font-weight-semibold">{{username}}</p>
+                <p class="fw-light text-muted mb-0">allenmoreno@gmail.com</p>
+              </div>
+              <a class="dropdown-item"><i class="dropdown-item-icon mdi mdi-account-outline text-primary me-2"></i> My Profile <span class="badge badge-pill badge-danger">1</span></a>
+              <a class="dropdown-item"><i class="dropdown-item-icon mdi mdi-message-text-outline text-primary me-2"></i> Messages</a>
+              <a class="dropdown-item"><i class="dropdown-item-icon mdi mdi-calendar-check-outline text-primary me-2"></i> Activity</a>
+              <a class="dropdown-item"><i class="dropdown-item-icon mdi mdi-help-circle-outline text-primary me-2"></i> FAQ</a>
+              <a class="dropdown-item"><i class="dropdown-item-icon mdi mdi-power text-primary me-2"></i>Sign Out</a>
+            </div>
+          </li>-->
+          <!--Fin fotografia usario-->
+
+        </ul>
+
+        <button class="navbar-toggler navbar-toggler-right d-lg-none align-self-center" type="button" data-bs-toggle="offcanvas">
+          <span class="mdi mdi-menu"></span>
+        </button>
+      </div>
+      
+    </nav>
+
+    <!-- partial -->
+    <div class="container-fluid page-body-wrapper">
+      <!-- Boton de configuracion -->
+      <div class="theme-setting-wrapper">
+        <div id="settings-trigger"><i class="ti-settings"></i></div>
+        <div id="theme-settings" class="settings-panel">
+          <i class="settings-close ti-close"></i>
+          <p class="settings-heading">Confiuración de barra lateral</p>
+          <div class="sidebar-bg-options selected" id="sidebar-light-theme"><div class="img-ss rounded-circle bg-light border me-3"></div>Light</div>
+          <div class="sidebar-bg-options" id="sidebar-dark-theme"><div class="img-ss rounded-circle bg-dark border me-3"></div>Dark</div>
+          <p class="settings-heading mt-2">Configuración de header</p>
+          <div class="color-tiles mx-0 px-4">
+            <div class="tiles success"></div>
+            <div class="tiles warning"></div>
+            <div class="tiles danger"></div>
+            <div class="tiles info"></div>
+            <div class="tiles dark"></div>
+            <div class="tiles default"></div>
+          </div>
+        </div>
+      </div>
+      <div id="right-sidebar" class="settings-panel">
+        <i class="settings-close ti-close"></i>
+        <ul class="nav nav-tabs border-top" id="setting-panel" role="tablist">
+          <li class="nav-item">
+            <a class="nav-link active" id="todo-tab" data-bs-toggle="tab" href="#todo-section" role="tab" aria-controls="todo-section" aria-expanded="true">TO DO LIST</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" id="chats-tab" data-bs-toggle="tab" href="#chats-section" role="tab" aria-controls="chats-section">CHATS</a>
+          </li>
+        </ul>
+
+      </div>
+      <!-- Fin de boton de configuracion -->
+
+      <!-- Barra lateral -->
+      <nav class="sidebar sidebar-offcanvas" id="sidebar">
+        <ul class="nav">
+          
+          <li class="nav-item">
+            <a class="nav-link" href="index.html">
+              <i class="mdi mdi-grid-large menu-icon"></i>
+              <span class="menu-title">Resumen</span>
+            </a>
+          </li>
+          
+          <li class="nav-item">
+            <a class="nav-link" href="#">
+              <i class="menu-icon mdi mdi mdi-access-point"></i>
+              <span class="menu-title">Stream</span>
+            </a>
+          </li>
+
+          <li class="nav-item">
+            <a class="nav-link" href="#">
+              <i class="menu-icon mdi mdi-chart-line"></i>
+              <span class="menu-title">Estadisticas</span>
+            </a>
+          </li>
+
+          <li class="nav-item">
+            <a class="nav-link" href="#">
+              <i class="menu-icon mdi mdi-information"></i>
+              <span class="menu-title">Información</span>
+            </a>
+          </li>
+          
+        </ul>
+      </nav>
+      <!-- Fin de barra lateral -->
+
+      <!-- partial -->
+      <div class="main-panel">
+        <div class="content-wrapper">
+          <div class="row">
+            <div class="col-sm-12">
+              <div class="home-tab">
+                <div class="d-sm-flex align-items-center justify-content-between border-bottom">
+                  <ul class="nav nav-tabs" role="tablist">
+                    <li class="nav-item">
+                      <a class="nav-link active ps-0" id="home-tab" data-bs-toggle="tab" href="#overview" role="tab" aria-controls="overview" aria-selected="true">Resumen</a>
+                    </li>
+                    <li class="nav-item">
+                      <a class="nav-link" id="profile-tab" data-bs-toggle="tab" href="#audiences" role="tab" aria-selected="false">Stream</a>
+                    </li>
+                    <li class="nav-item">
+                      <a class="nav-link" id="contact-tab" data-bs-toggle="tab" href="#demographics" role="tab" aria-selected="false">Estadísticas</a>
+                    </li>
+                    <li class="nav-item">
+                      <a class="nav-link border-0" id="more-tab" data-bs-toggle="tab" href="#more" role="tab" aria-selected="false">Información</a>
+                    </li>
+                  </ul>
+                  <div>
+                    <div class="btn-wrapper">
+                      <a href="#" class="btn btn-otline-dark align-items-center"><i class="icon-share"></i> Share</a>
+                      <a href="#" class="btn btn-otline-dark"><i class="icon-printer"></i> Print</a>
+                      <a href="#" class="btn btn-primary text-white me-0"><i class="icon-download"></i> Export</a>
+                    </div>
+                  </div>
+                </div>
+                <div class="tab-content tab-content-basic">
+                  <div class="tab-pane fade show active" id="overview" role="tabpanel" aria-labelledby="overview"> 
+                    <div class="row">
+                      <div class="col-sm-12">
+                        <div class="statistics-details d-flex align-items-center justify-content-between" style="margin-bottom: 0%;">
+                          <div>
+                            <p class="statistics-title">Última actualización</p>
+                            <h3 class="rate-percentage">7,682</h3>
+                            <p class="text-success d-flex"><i class="mdi mdi-menu-up"></i><span>+0.1%</span></p>
+                          </div>
+                          <div>
+                            <p class="statistics-title">Hora del servidor</p>
+                            <h3 class="rate-percentage" id="HoraActual"></h3>
+                            <p class="text-center d-flex"><span>{{fecha}}</span></p>
+                          </div>
+                          <div>
+                            <p class="statistics-title">Tiempo de sesión</p>
+                            <h3 class="rate-percentage" id="timespent" ></h3>
+                            <p class="text"><span id="iniciosesion"></span></p>
+                          </div>
+                        </div>
+                      </div>
+                    </div> 
+
+                    <!--Estado de solar Tracker-->
+                    <div class="row">
+                      <blockquote class="blockquote blockquote-primary">
+                        <h2>
+                          Estado de Solar Tracker:
+                          <small class="text-success">
+                            Conectado
+                          </small>
+                        </h2>
+                      </blockquote>
+                    </div>
+                    <!--Estado de solar Tracker-->
+
+                    <div class="row">
+                      <div class="col-lg-8 d-flex flex-column">
+                        <div class="row flex-grow">
+                          <div class="col-12 col-lg-4 col-lg-12 grid-margin stretch-card">
+                            <div class="card card-rounded">
+                              <div class="card-body">
+                                <div class="d-sm-flex justify-content-between align-items-start">
+                                  <div>
+                                   <h4 class="card-title card-title-dash">Resumen diario</h4>
+                                   <h5 class="card-subtitle card-subtitle-dash">Historial de las últimas lecturas de voltaje</h5>
+                                  </div>
+                                  <div id="performance-line-legend"></div>
+                                </div>
+                                <div class="chartjs-wrapper mt-5">
+                                  <canvas id="performaneLine"></canvas>
+                                </div>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                      <div class="col-lg-4 d-flex flex-column">
+                        <div class="row flex-grow">
+                          <div class="col-md-6 col-lg-12 grid-margin stretch-card">
+                            <div class="card bg-primary card-rounded">
+                              <div class="card-body pb-0">
+                                <h4 class="card-title card-title-dash text-white mb-4">Última lectura</h4>
+                                <div class="row">
+                                  <div class="col-sm-4">
+                                    <p class="status-summary-ight-white mb-1">Voltaje</p>
+                                    <h2 class="text-info">357</h2>
+                                  </div>
+                                  <div class="col-sm-8">
+                                    <div class="status-summary-chart-wrapper pb-4">
+                                      <canvas id="status-summary"></canvas>
+                                    </div>
+                                  </div>
+                                </div>
+                              </div>
+                            </div>
+                          </div>
+                          <div class="col-md-6 col-lg-12 grid-margin stretch-card">
+                            <div class="card card-rounded">
+                              <div class="card-body">
+                                <div class="row">
+                                  <div class="col-sm-6">
+                                    <div class="d-flex justify-content-between align-items-center mb-2 mb-sm-0">
+                                      <div class="circle-progress-width">
+                                        <div id="totalVisitors" class="progressbar-js-circle pr-2"></div>
+                                      </div>
+                                      <div>
+                                        <p class="text-small mb-2">Voltaje promedio del día</p>
+                                        <h4 class="mb-0 fw-bold">26.80%</h4>
+                                      </div>
+                                    </div>
+                                  </div>
+                                  <div class="col-sm-6">
+                                    <div class="d-flex justify-content-between align-items-center">
+                                      <div class="circle-progress-width">
+                                        <div id="visitperday" class="progressbar-js-circle pr-2"></div>
+                                      </div>
+                                      <div>
+                                        <p class="text-small mb-2">Tiempo encendido</p>
+                                        <h4 class="mb-0 fw-bold">9999%</h4>
+                                      </div>
+                                    </div>
+                                  </div>
+                                </div>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <!-- content-wrapper ends -->
+        <!-- Footer -->
+        <footer class="footer">
+          <div class="d-sm-flex justify-content-center justify-content-sm-between">
+            <span class="text-muted text-center text-sm-left d-block d-sm-inline-block">Universidad de San Carlos de Guatemala, Faculta de Ingeniería, Escuela de Mecánica Eléctrica, Laboratorios de Electrónica.</span>
+            <span class="float-none float-sm-right d-block mt-1 mt-sm-0 text-center">Copyright © 2023. All rights reserved.</span>
+          </div>
+        </footer>
+        <!-- Fin de Footer -->
+      </div>
+      <!-- main-panel ends -->
+    </div>
+    <!-- page-body-wrapper ends -->
+  </div>
+  <!-- container-scroller -->
+
+  <!-- plugins:js -->
+  <script src="{% static 'ProyectoApp/vendors/js/vendor.bundle.base.js' %}"></script>
+  <!-- endinject -->
+  <!-- Plugin js for this page -->
+  <script src="{% static 'ProyectoApp/vendors/chart.js/Chart.min.js' %}"></script>
+  <script src="{% static 'ProyectoApp/vendors/bootstrap-datepicker/bootstrap-datepicker.min.js' %}"></script>
+  <script src="{% static 'ProyectoApp/vendors/progressbar.js/progressbar.min.js' %}"></script>
+
+  <!-- End plugin js for this page -->
+  <!-- inject:js -->
+  <script src="{% static 'ProyectoApp/js/off-canvas.js' %}"></script>
+  <script src="{% static 'ProyectoApp/js/hoverable-collapse.js' %}"></script>
+  <script src="{% static 'ProyectoApp/js/template.js' %}"></script>
+  <script src="{% static 'ProyectoApp/js/settings.js' %}"></script>
+  <script src="{% static 'ProyectoApp/js/todolist.js' %}"></script>
+  <!-- endinject -->
+  <!-- Custom js for this page-->
+  <script src="{% static 'ProyectoApp/js/dashboard.js' %}"></script>
+  <script src="{% static 'ProyectoApp/js/Chart.roundedBarCharts.js' %}"></script>
+  <!-- End custom js for this page-->
+
+  <!--My scripts-->
+  <script type="text/javascript">
+    showTime();
+
+    function showTime(){
+        myDate = new Date();
+        hours = myDate.getHours();
+        minutes = myDate.getMinutes();
+        seconds = myDate.getSeconds();
+        if (hours < 10) hours = 0 + hours;
+        
+        if (minutes < 10) minutes = "0" + minutes;
+        
+        if (seconds < 10) seconds = "0" + seconds;
+        
+        $("#HoraActual").text(hours+ ":" +minutes+ ":" +seconds);
+        setTimeout("showTime()", 1000);
+    }
+
+    //////////////////////////////////////////////////////////////////////
+    ///////////////////////Tiempo de sesion///////////////////////////////
+    startday=new Date();
+    clockStart=startday.getTime();
+
+    // crea un nuevo objeto `Date`
+    var today = new Date();
+    
+    // obtener la fecha y la hora
+    var now = today.toLocaleTimeString();
+    $("#iniciosesion").text(now);
+
+    function initStopwatch(){
+      var myTime=new Date();
+      return((myTime.getTime()-clockStart)/1000);
+    }
+    function getSecs(){
+      var tSecs=Math.round(initStopwatch());
+      var iSecs=tSecs%60;
+      var iMins=Math.round((tSecs-30)/60);
+      var sSecs=""+((iSecs>9)?iSecs:"0"+iSecs);var sMins=""+((iMins>9)?iMins:"0"+iMins);
+      $("#timespent").text(sMins+":"+sSecs);
+      setTimeout("getSecs()", 1000);
+    }
+    window.onload = function(){
+    window.setTimeout('getSecs()',1);
+    }
+    ///////////////////////Tiempo de sesion///////////////////////////////
+    //////////////////////////////////////////////////////////////////////
+
+  </script>
+
+</body>
+
+</html>
+
