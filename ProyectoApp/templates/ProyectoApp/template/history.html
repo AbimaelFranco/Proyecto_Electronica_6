@@ -174,61 +174,94 @@
 
       <!-- partial -->
       <div class="main-panel">
-        <div class="content-wrapper" style="padding-bottom: 0%; padding-top: 0%; ">
+        <div class="content-wrapper">
           <div class="row">
             <div class="col-sm-12">
               <div class="home-tab">
-                <div class="tab-content tab-content-basic">
+                <div class="d-sm-flex align-items-center justify-content-between border-bottom" style="padding-bottom: 0%;">
+                  <ul class="nav nav-tabs" role="tablist">
+                    <li class="nav-item">
+                      <a class="nav-link" href="#"><span class="menu-title">Panel estático</span></a>
+                    </li>
+                    <li class="nav-item">
+                      <a class="nav-link" href="{% url 'History2' %}"><span class="menu-title">Panel dinámico</span></a>
+                    </li>
+                  </ul>
+                  <div>
+                    <div class="btn-wrapper">
+                      <a href="#" class="btn btn-otline-dark align-items-center"><i class="icon-share"></i> Share</a>
+                      <a href="#" class="btn btn-otline-dark"><i class="icon-printer"></i> Print</a>
+                      <a href="#" class="btn btn-primary text-white me-0"><i class="icon-download"></i> Export</a>
+                    </div>
+                  </div>
+                </div>
+                <div class="tab-content tab-content-basic" style="padding-bottom: 0%; padding-top: 0%;">
                   <div class="tab-pane fade show active" id="overview" role="tabpanel" aria-labelledby="overview"> 
+
                     <div class="row">
-                      <div class="col-sm-12">
-                        <div class="statistics-details d-flex align-items-center justify-content-between" style="margin-bottom: 0%;">
-                          <div>
-                            <p class="statistics-title">Última actualización</p>
-                            <h3 class="rate-percentage">{{ultima_lectura}} Voltios</h3>
-                            <p class="text-success d-flex"><i class="mdi mdi-menu-up"></i><span>{{ultima_hora.date}}</span></p>
-                          </div>
-                          <div>
-                            <p class="statistics-title">Hora del servidor</p>
-                            <h3 class="rate-percentage" id="HoraActual"></h3>
-                            <p class="text-center d-flex"><span>{{fecha}}</span></p>
-                          </div>
-                          <div>
-                            <p class="statistics-title">Tiempo de sesión</p>
-                            <h3 class="rate-percentage" id="timespent" ></h3>
-                            <p class="text"><span id="iniciosesion"></span></p>
-                          </div>
-                        </div>
-                      </div>
-                    </div> 
-
-                    <!--Estado de solar Tracker-->
-                    <!--<div class="row">
-                      <blockquote class="blockquote blockquote-primary">
-                        <h2>
-                          Estado de Solar Tracker:
-                          <small class="text-danger">
-                            Desonectado
-                          </small>
-                        </h2>
-                      </blockquote>
-                    </div>-->
-                    <!--Estado de solar Tracker-->
-
-                    <div class="row" style="padding-top: 1%;">
                       <div class="col-lg-8 d-flex flex-column">
                         <div class="row flex-grow">
                           <div class="col-12 col-lg-4 col-lg-12 grid-margin stretch-card">
                             <div class="card card-rounded">
                               <div class="card-body">
-                                <div class="d-sm-flex justify-content-between align-items-start">
-                                  <div>
-                                   <h4 class="card-title card-title-dash">Resumen diario</h4>
-                                   <h5 class="card-subtitle card-subtitle-dash">Historial de las últimas lecturas de voltaje</h5>
-                                   <img src="{{imagen}}" width="100%">
+                                <div class="d-flex justify-content-center">
+                                  <div width="100%" style="text-align: center;">
+                                    <div width="100%" style="text-align: center; justify-content: center;">
+                                    <h1>Información de panel estático</h1>
+                                    <table class="table table-striped" width="100%">
+                                   <thead>
+                                     <tr>
+                                       <!--<th>No.</th>-->
+                                       <th>Fecha</th>
+                                       <th>Voltaje</th>
+                                       <th>Intensidad</th>
+                                       <th>Corriente</th>
+                                     </tr>
+                                   </thead>
+                                   <tbody>
+                                     {% for row in page_data %}
+                                       <tr>
+                                         <!--<td>{{ row.0 }}</td>-->
+                                         <td>{{ row.1 }}</td>
+                                         <td>{{ row.2 }}</td>
+                                         <td>{{ row.3 }}</td>
+                                         <td>{{ row.4 }}</td>
+                                       </tr>
+                                     {% endfor %}
+                                   </tbody>
+                                    </table>
+                                    <div class="pagination justify-content-center">
+                                   <span class="step-links">
+                                       {% if page_data.has_previous %}
+                                            <a href="?page=1" class="btn btn-warning">
+                                              <i class="fas fa-arrow-right">Inicio</i>
+                                            </a>
+
+                                            <a href="?page={{ page_data.previous_page_number }}" class="btn btn-warning">
+                                              <i class="fas fa-arrow-right">Anterior</i>
+                                            </a>
+                                           
+                                       {% endif %}
+                               
+                                       <span class="current-page">
+                                           Página {{ page_data.number }} de {{ page_data.paginator.num_pages }}.
+                                       </span>
+                               
+                                       {% if page_data.has_next %}
+                                        <a href="?page={{ page_data.next_page_number }}" class="btn btn-warning">
+                                          <i class="fas fa-arrow-right">Siguiente</i>
+                                        </a>
+
+                                        <a href="?page={{ page_data.paginator.num_pages }}" class="btn btn-warning">
+                                          <i class="fas fa-arrow-right">Fin</i>
+                                        </a>
+                                       
+                                       {% endif %}
+                                   </span>
+                                    </div>
+                                    </div>
                                   </div>
-                                  <!--<div id="performance-line-legend"></div>-->
-                                </div>
+                                 </div>
                                 <!--<div class="chartjs-wrapper mt-5">
                                   <canvas id="performaneLine"></canvas>
                                 </div>-->
@@ -241,51 +274,21 @@
                         <div class="row flex-grow">
                           <div class="col-md-6 col-lg-12 grid-margin stretch-card">
                             <div class="card bg-primary card-rounded">
-                              <div class="card-body pb-0">
-                                <h4 class="card-title card-title-dash text-white mb-4">Estado de Solar Tracker:</h4>
+                              <img src="{{imagen}}" width="100%" height="100%">
+                              <!--<div class="card-body pb-0">
+                                <h4 class="card-title card-title-dash text-white mb-4">Última lectura</h4>
                                 <div class="row">
-                                  <div class="col-sm-8">
-                                    <!--<p class="status-summary-ight-white mb-1">Voltaje</p>-->
-                                    <h2 class="text-danger">Desonectado</h2>
+                                  <div class="col-sm-4">
+                                    <p class="status-summary-ight-white mb-1">Voltaje</p>
+                                    <h2 class="text-info">{{ultima_lectura}}</h2>
                                   </div>
-                                  <!--<div class="col-sm-8">
+                                  <div class="col-sm-8">
                                     <div class="status-summary-chart-wrapper pb-4">
                                       <canvas id="status-summary"></canvas>
                                     </div>
-                                  </div>-->
-                                </div>
-                              </div>
-                            </div>
-                          </div>
-                          <!--Tarjetas de valores medios y medianas-->
-                          <div class="col-md-6 col-lg-12 grid-margin stretch-card">
-                            <div class="card card-rounded">
-                              <div class="card-body">
-                                <div class="row">
-                                  <div class="col-sm-6">
-                                    <div class="d-flex justify-content-between align-items-center mb-2 mb-sm-0">
-                                      <div class="circle-progress-width">
-                                        <div id="totalVisitors" class="progressbar-js-circle pr-2"></div>
-                                      </div>
-                                      <div>
-                                        <p class="text-small mb-2">Voltaje promedio</p>
-                                        <h4 class="mb-0 fw-bold">{{media_medicion|floatformat:2}}</h4>
-                                      </div>
-                                    </div>
-                                  </div>
-                                  <div class="col-sm-6">
-                                    <div class="d-flex justify-content-between align-items-center">
-                                      <div class="circle-progress-width">
-                                        <div id="visitperday" class="progressbar-js-circle pr-2"></div>
-                                      </div>
-                                      <div>
-                                        <p class="text-small mb-2">Intensidad promedio</p>
-                                        <h4 class="mb-0 fw-bold">{{media_intensidad|floatformat:2}}</h4>
-                                      </div>
-                                    </div>
                                   </div>
                                 </div>
-                              </div>
+                              </div>-->
                             </div>
                           </div>
                           <div class="col-md-6 col-lg-12 grid-margin stretch-card">
@@ -299,37 +302,7 @@
                                       </div>
                                       <div>
                                         <p class="text-small mb-2">Voltaje promedio</p>
-                                        <h4 class="mb-0 fw-bold">{{media_medicion|floatformat:2}}</h4>
-                                      </div>
-                                    </div>
-                                  </div>
-                                  <div class="col-sm-6">
-                                    <div class="d-flex justify-content-between align-items-center">
-                                      <div class="circle-progress-width">
-                                        <div id="visitperday" class="progressbar-js-circle pr-2"></div>
-                                      </div>
-                                      <div>
-                                        <p class="text-small mb-2">Intensidad promedio</p>
-                                        <h4 class="mb-0 fw-bold">{{media_intensidad|floatformat:2}}</h4>
-                                      </div>
-                                    </div>
-                                  </div>
-                                </div>
-                              </div>
-                            </div>
-                          </div>
-                          <div class="col-md-6 col-lg-12 grid-margin stretch-card">
-                            <div class="card card-rounded">
-                              <div class="card-body">
-                                <div class="row">
-                                  <div class="col-sm-6">
-                                    <div class="d-flex justify-content-between align-items-center mb-2 mb-sm-0">
-                                      <div class="circle-progress-width">
-                                        <div id="totalVisitors" class="progressbar-js-circle pr-2"></div>
-                                      </div>
-                                      <div>
-                                        <p class="text-small mb-2">Voltaje promedio</p>
-                                        <h4 class="mb-0 fw-bold">{{media_medicion|floatformat:2}}</h4>
+                                        <h4 class="mb-0 fw-bold">{{media_voltaje|floatformat:2}}</h4>
                                       </div>
                                     </div>
                                   </div>

@@ -1,12 +1,14 @@
 import psycopg2
+import os
 import pandas as pd
 import matplotlib.pyplot as plt
+
 
 # Establecer la conexión con la base de datos en PostgreSQL
 conn = psycopg2.connect(
     dbname="proyecto_electronica_6",
     user="postgres",
-    password="It@lia2001",
+    password="Km2_R#%Si",
     host="127.0.0.1",
     port="5432"
 )
@@ -41,4 +43,14 @@ plt.title('Gráfico de Medición e Intensidad vs Fecha')
 plt.xticks(rotation=45)
 plt.legend()
 plt.grid(True)
-plt.show()
+# plt.show()
+
+ruta_archivo = 'static/ProyectoApp/plots/mi_grafico.png'
+
+# Verificar si el archivo ya existe
+if os.path.isfile(ruta_archivo):
+    # Si el archivo existe, eliminarlo
+    os.remove(ruta_archivo)
+
+# Guardar el gráfico en un archivo
+plt.savefig(ruta_archivo)

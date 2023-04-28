@@ -82,7 +82,7 @@ DATABASES = {
         'ENGINE': 'django.db.backends.postgresql_psycopg2',
         'NAME': 'proyecto_electronica_6',
         'USER': 'postgres',
-        'PASSWORD': 'It@lia2001',
+        'PASSWORD': 'Km2_R#%Si',
         'HOST': '127.0.0.1',
         'PORT': '5432',
     }
@@ -113,7 +113,9 @@ AUTH_PASSWORD_VALIDATORS = [
 
 LANGUAGE_CODE = 'en-us'
 
-TIME_ZONE = 'UTC'
+# TIME_ZONE = 'UTC'
+TIME_ZONE = 'America/Guatemala'
+
 
 USE_I18N = True
 

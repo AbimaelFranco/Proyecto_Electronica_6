@@ -6,7 +6,7 @@ import matplotlib.pyplot as plt
 conn = psycopg2.connect(
     dbname="proyecto_electronica_6",
     user="postgres",
-    password="It@lia2001",
+    password="Km2_R#%Si",
     host="127.0.0.1",
     port="5432"
 )

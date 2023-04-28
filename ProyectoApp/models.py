@@ -19,5 +19,20 @@ from django.db import models
 
 class static_panel(models.Model):
     date = models.DateTimeField(auto_now_add=True)
-    measurement = models.IntegerField(null=False, default= 0)
-    intensity = models.IntegerField(null=False, default= 0)
+    measurement = models.FloatField(null=False, default= 0)
+    intensity = models.FloatField(null=False, default= 0)
+    current = models.FloatField(null=False, default=0)
+
+class dinamic_panel(models.Model):
+    date = models.DateTimeField(auto_now_add=True)
+    measurement = models.FloatField(null=False, default= 0)
+    intensity1 = models.FloatField(null=False, default= 0)
+    intensity2 = models.FloatField(null=False, default= 0)
+    intensity3 = models.FloatField(null=False, default= 0)
+    intensity4 = models.FloatField(null=False, default= 0)
+    intensity5 = models.FloatField(null=False, default= 0)
+    intensity6 = models.FloatField(null=False, default= 0)
+    intensity7 = models.FloatField(null=False, default= 0)
+    intensity8 = models.FloatField(null=False, default= 0)
+    intensity9 = models.FloatField(null=False, default= 0)
+    current = models.FloatField(null=False, default=0)
