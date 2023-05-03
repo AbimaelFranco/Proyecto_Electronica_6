@@ -3,38 +3,30 @@ from datetime import datetime, timedelta
 from getpass import getuser
 from ProyectoApp.models import static_panel, dinamic_panel
 from ProyectoApp.data import data
-
-import random###############################
-import time#################################
-
-
-##############################################
-
+from decouple import config
 import psycopg2
 import os
 import pandas as pd
 import matplotlib.pyplot as plt
-
 from django.core.paginator import Paginator
 
-
-##############################################
+import random###############################
+import time#################################
 
 def home(request):
 
-    media_intensidad, media_medicion, media_corriente = data()
+    media_intensidad, media_medicion, media_corriente, std_intensidad, std_medicion, std_corriente = data()
 
     generate_image()
-
-    # print("Desde views, la media de intensidad es:", media_intensidad)
-
     imagen = 'static/ProyectoApp/plots/mi_grafico.png'
+
+    media_voltajelive = comprobar_en_vivo()
 
     ################################################    
     entradas = static_panel.objects.all()
     ultima_entrada=[]
     #print("################################################")
-    if len(entradas)>3:
+    if len(entradas)>1:
         for i in range(len(entradas)-1, len(entradas)):
             ultima_entrada.append(entradas[i])
 
@@ -43,7 +35,7 @@ def home(request):
     ultima_hora = ultimo_elemento.date
 
     ################################################    
-    datos()
+    # datos()
     #################################################
 
     username = getuser()
@@ -68,12 +60,17 @@ def home(request):
         "media_intensidad":media_intensidad,
         "media_medicion":media_medicion,
         "media_corriente": media_corriente,
+        "std_intensidad": std_intensidad,
+        "std_medicion": std_medicion,
+        "std_corriente": std_corriente,
+        "media_voltajelive": media_voltajelive,
     })
 
 def graph_live(request):
 
     media_voltaje, media_intensidad, media_corriente = generate_image4()
     imagen = 'static/ProyectoApp/plots/mi_grafico_live.png'
+    media_voltajelive = comprobar_en_vivo()
 
     username = getuser()
     hora = datetime.now()
@@ -94,6 +91,7 @@ def graph_live(request):
         "media_voltaje": media_voltaje,
         "media_intensidad": media_intensidad,
         "media_corriente": media_corriente,
+        "media_voltajelive":media_voltajelive,
     })
 
 def graph_history(request):
@@ -244,12 +242,12 @@ def datos2():
 def generate_image():
     # Establecer la conexión con la base de datos en PostgreSQL
     conn = psycopg2.connect(
-        dbname="proyecto_electronica_6",
-        user="postgres",
-        password="Km2_R#%Si",
-        host="127.0.0.1",
-        port="5432"
-    )
+            dbname= config('DB_NAME'),
+            user= config('DB_USER'),
+            password= config('DB_PASSWORD'),
+            host= config('DB_HOST'),
+            port= config('DB_PORT'),
+        )
 
     # Consulta SQL para obtener los datos
     # consulta = 'SELECT date, measurement, intensity FROM "ProyectoApp_static_panel" ;'
@@ -264,7 +262,7 @@ def generate_image():
     # Convertir la columna 'date' a formato de fecha
     df['date'] = pd.to_datetime(df['date'])
     df['time'] = df['date'].dt.strftime('%H:%M:%S')
-    df['time'] = df['date'].dt.time
+    # df['time'] = df['date'].dt.time
 
     # print(df['time'])
 
@@ -276,9 +274,9 @@ def generate_image():
 
     # Graficar los datos
     plt.figure(figsize=(12, 6))
-    plt.plot(df['date'], df['measurement'], label='Voltaje')
-    plt.plot(df['date'], df['intensity'], label='Intensidad')
-    plt.plot(df['date'], df['current'], label='Corriente')
+    plt.plot(df['time'], df['measurement'], label='Voltaje')
+    plt.plot(df['time'], df['intensity'], label='Intensidad')
+    plt.plot(df['time'], df['current'], label='Corriente')
     # plt.scatter(max_measurement['date'], max_measurement['measurement'], color='red', label='Puntos máximos de Measurement')
     # plt.scatter(max_intensity['date'], max_intensity['intensity'], color='green', label='Puntos máximos de Intensity')
     plt.xlabel('Fecha')
@@ -306,12 +304,12 @@ def generate_image():
 def generate_image2():
     # Establecer la conexión con la base de datos en PostgreSQL
     conn = psycopg2.connect(
-        dbname="proyecto_electronica_6",
-        user="postgres",
-        password="Km2_R#%Si",
-        host="127.0.0.1",
-        port="5432"
-    )
+            dbname= config('DB_NAME'),
+            user= config('DB_USER'),
+            password= config('DB_PASSWORD'),
+            host= config('DB_HOST'),
+            port= config('DB_PORT'),
+        )
 
     # Consulta SQL para obtener los datos
     # consulta = 'SELECT date, measurement, intensity FROM "ProyectoApp_static_panel" ;'
@@ -329,6 +327,8 @@ def generate_image2():
 
     # Consulta SQL para obtener los datos de la última hora
     consulta = f'SELECT date, measurement, intensity, current FROM "ProyectoApp_static_panel" WHERE date BETWEEN \'{one_hour_ago_formatted}\' AND \'{now_formatted}\';'
+    # print(consulta)
+    # consulta = 'SELECT date, measurement, intensity, current FROM "ProyectoApp_static_panel" ORDER BY date DESC LIMIT 10;'
 
     # Leer los datos en un DataFrame de Pandas
     df = pd.read_sql(consulta, conn)
@@ -343,7 +343,7 @@ def generate_image2():
     # Convertir la columna 'date' a formato de fecha
     df['date'] = pd.to_datetime(df['date'])
     df['time'] = df['date'].dt.strftime('%H:%M:%S')
-    df['time'] = df['date'].dt.time
+    # df['time'] = df['date'].dt.time
 
     # print(df['time'])
 
@@ -356,12 +356,12 @@ def generate_image2():
     # Graficar los datos
     plt.figure(figsize=(7, 7))
     # plt.figure(figsize=(20, 10))
-    plt.plot(df['date'], df['measurement'], label='Voltaje')
-    plt.plot(df['date'], df['intensity'], label='Intensidad')
-    plt.plot(df['date'], df['current'], label='Corriente')
+    plt.plot(df['time'], df['measurement'], label='Voltaje')
+    plt.plot(df['time'], df['intensity'], label='Intensidad')
+    plt.plot(df['time'], df['current'], label='Corriente')
     # plt.scatter(max_measurement['date'], max_measurement['measurement'], color='red', label='Puntos máximos de Measurement')
     # plt.scatter(max_intensity['date'], max_intensity['intensity'], color='green', label='Puntos máximos de Intensity')
-    plt.xlabel('Fecha')
+    # plt.xlabel('Fecha')
     plt.ylabel('Voltaje/Intensidad/Corriente')
     plt.title('Registro de Medición e Intensidad')
     plt.xticks(rotation=45)
@@ -383,19 +383,17 @@ def generate_image2():
 
     return (media_voltaje, media_intensidad, media_corriente)
     
-
-
 ############################################################################
 ###############Generacion de Imagen panel dinamico ultima hora
 def generate_image3():
     # Establecer la conexión con la base de datos en PostgreSQL
     conn = psycopg2.connect(
-        dbname="proyecto_electronica_6",
-        user="postgres",
-        password="Km2_R#%Si",
-        host="127.0.0.1",
-        port="5432"
-    )
+            dbname= config('DB_NAME'),
+            user= config('DB_USER'),
+            password= config('DB_PASSWORD'),
+            host= config('DB_HOST'),
+            port= config('DB_PORT'),
+        )
 
     # Obtener la hora actual
     now = datetime.now()
@@ -409,6 +407,7 @@ def generate_image3():
 
     # Consulta SQL para obtener los datos de la última hora
     consulta = f'SELECT measurement, intensity1, intensity2, intensity3, intensity4, intensity5, intensity6, intensity7, intensity8, intensity9, current FROM "ProyectoApp_dinamic_panel" WHERE date BETWEEN \'{one_hour_ago_formatted}\' AND \'{now_formatted}\';'
+    # print(consulta)
 
     # Leer los datos en un DataFrame de Pandas
     df = pd.read_sql(consulta, conn)
@@ -454,7 +453,7 @@ def generate_image3():
 
     for bar in bars:
         height = bar.get_height()
-        ax.text(bar.get_x() + bar.get_width() / 2, height, str(height), ha='center', va='bottom')
+        ax.text(bar.get_x() + bar.get_width() / 2, height, str(f"{height:.2f}"), ha='center', va='bottom')
 
 
     # plt.xlabel('Medición')
@@ -476,18 +475,17 @@ def generate_image3():
 
     return (media_voltaje, media_corriente)
 
-
 ############################################################################
 ###############Generacion de Live
 def generate_image4():
     # Establecer la conexión con la base de datos en PostgreSQL
     conn = psycopg2.connect(
-        dbname="proyecto_electronica_6",
-        user="postgres",
-        password="Km2_R#%Si",
-        host="127.0.0.1",
-        port="5432"
-    )
+            dbname= config('DB_NAME'),
+            user= config('DB_USER'),
+            password= config('DB_PASSWORD'),
+            host= config('DB_HOST'),
+            port= config('DB_PORT'),
+        )
 
     # Consulta SQL para obtener los datos
     # consulta = 'SELECT date, measurement, intensity FROM "ProyectoApp_static_panel" ;'
@@ -497,7 +495,7 @@ def generate_image4():
     now = datetime.now()
 
     # Restar una hora a la hora actual para obtener la hora hace una hora
-    one_hour_ago = now - timedelta(hours=0.16)
+    one_hour_ago = now - timedelta(hours=0.083)
 
     # Formatear las fechas para usarlas en la consulta SQL
     now_formatted = now.strftime("%Y-%m-%d %H:%M:%S")
@@ -519,7 +517,7 @@ def generate_image4():
     # Convertir la columna 'date' a formato de fecha
     df['date'] = pd.to_datetime(df['date'])
     df['time'] = df['date'].dt.strftime('%H:%M:%S')
-    df['time'] = df['date'].dt.time
+    # df['time'] = df['date'].dt.time
 
     # print(df['time'])
 
@@ -532,9 +530,9 @@ def generate_image4():
     # Graficar los datos
     plt.figure(figsize=(12, 7))
     # plt.figure(figsize=(20, 10))
-    plt.plot(df['date'], df['measurement'], label='Voltaje')
-    plt.plot(df['date'], df['intensity'], label='Intensidad')
-    plt.plot(df['date'], df['current'], label='Corriente')
+    plt.plot(df['time'], df['measurement'], label='Voltaje')
+    plt.plot(df['time'], df['intensity'], label='Intensidad')
+    plt.plot(df['time'], df['current'], label='Corriente')
     # plt.scatter(max_measurement['date'], max_measurement['measurement'], color='red', label='Puntos máximos de Measurement')
     # plt.scatter(max_intensity['date'], max_intensity['intensity'], color='green', label='Puntos máximos de Intensity')
     plt.xlabel('Fecha')
@@ -558,4 +556,44 @@ def generate_image4():
     plt.savefig(ruta_archivo)
 
     return (media_voltaje, media_intensidad, media_corriente)
+  
+def comprobar_en_vivo():
+    # Establecer la conexión con la base de datos en PostgreSQL
+    conn = psycopg2.connect(
+            dbname= config('DB_NAME'),
+            user= config('DB_USER'),
+            password= config('DB_PASSWORD'),
+            host= config('DB_HOST'),
+            port= config('DB_PORT'),
+        )
+
+    # Consulta SQL para obtener los datos
+    # consulta = 'SELECT date, measurement, intensity FROM "ProyectoApp_static_panel" ;'
+    # consulta = 'SELECT date, measurement, intensity, current FROM "ProyectoApp_static_panel" WHERE CAST(date AS DATE) = CURRENT_DATE;'
+
+    # Obtener la hora actual
+    now = datetime.now()
+
+    # Restar una hora a la hora actual para obtener la hora hace una hora
+    one_hour_ago = now - timedelta(hours=.05)
+    # now = now + timedelta(hours=5.95)
+
+    # Formatear las fechas para usarlas en la consulta SQL
+    now_formatted = now.strftime("%Y-%m-%d %H:%M:%S")
+    one_hour_ago_formatted = one_hour_ago.strftime("%Y-%m-%d %H:%M:%S")
+
+    # Consulta SQL para obtener los datos de la última hora
+    consulta = f'SELECT date, measurement FROM "ProyectoApp_static_panel" WHERE date BETWEEN \'{one_hour_ago_formatted}\' AND \'{now_formatted}\';'
+    print(consulta)
+
+    # Leer los datos en un DataFrame de Pandas
+    df = pd.read_sql(consulta, conn)
+
+    # Cerrar la conexión con la base de datos
+    conn.close()
+
+    media_voltaje = df["measurement"].mean()
+    # print("Voltaje promedio de ultimos minutos", media_voltaje)
+
+    return (media_voltaje)
   

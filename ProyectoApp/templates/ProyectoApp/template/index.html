@@ -40,11 +40,11 @@
           </button>
         </div>
         <div>
-          <a class="navbar-brand brand-logo" href="index.html">
-            <img src="{% static 'ProyectoApp/images/logo.svg'%}" alt="logo" />
+          <a class="navbar-brand brand-logo" href="{% url 'Home' %}">
+            <img src="{% static 'ProyectoApp/images/logo.svg'%}" alt="logo" style="height: 100%;"/>
           </a>
-          <a class="navbar-brand brand-logo-mini" href="index.html">
-            <img src="{% static 'ProyectoApp/images/logo-mini.svg'%}" alt="logo" />
+          <a class="navbar-brand brand-logo-mini" href="{% url 'Home' %}">
+            <img src="{% static 'ProyectoApp/images/logo-mini.svg'%}" alt="logo" style="height: 100%;"/>
           </a>
         </div>
       </div>
@@ -108,7 +108,7 @@
         <div id="settings-trigger"><i class="ti-settings"></i></div>
         <div id="theme-settings" class="settings-panel">
           <i class="settings-close ti-close"></i>
-          <p class="settings-heading">Confiuración de barra lateral</p>
+          <p class="settings-heading">Configuración de barra lateral</p>
           <div class="sidebar-bg-options selected" id="sidebar-light-theme"><div class="img-ss rounded-circle bg-light border me-3"></div>Light</div>
           <div class="sidebar-bg-options" id="sidebar-dark-theme"><div class="img-ss rounded-circle bg-dark border me-3"></div>Dark</div>
           <p class="settings-heading mt-2">Configuración de header</p>
@@ -246,7 +246,11 @@
                                 <div class="row">
                                   <div class="col-sm-8">
                                     <!--<p class="status-summary-ight-white mb-1">Voltaje</p>-->
+                                    {% if media_voltajelive > 0%}
+                                    <h2 class="text-success">Conectado</h2>
+                                    {% else %}
                                     <h2 class="text-danger">Desonectado</h2>
+                                    {% endif %}
                                   </div>
                                   <!--<div class="col-sm-8">
                                     <div class="status-summary-chart-wrapper pb-4">
@@ -268,8 +272,8 @@
                                         <div id="totalVisitors" class="progressbar-js-circle pr-2"></div>
                                       </div>
                                       <div>
-                                        <p class="text-small mb-2">Voltaje promedio</p>
-                                        <h4 class="mb-0 fw-bold">{{media_medicion|floatformat:2}}</h4>
+                                        <p class="text-small mb-2" style="text-align: left;">Voltaje promedio</p>
+                                        <h4 class="mb-0 fw-bold" style="text-align: left;">{{media_medicion|floatformat:2}}</h4>
                                       </div>
                                     </div>
                                   </div>
@@ -279,8 +283,8 @@
                                         <div id="visitperday" class="progressbar-js-circle pr-2"></div>
                                       </div>
                                       <div>
-                                        <p class="text-small mb-2">Intensidad promedio</p>
-                                        <h4 class="mb-0 fw-bold">{{media_intensidad|floatformat:2}}</h4>
+                                        <p class="text-small mb-2" style="text-align: left;">Desviación de voltaje</p>
+                                        <h4 class="mb-0 fw-bold" style="text-align: left;">{{std_medicion|floatformat:2}}</h4>
                                       </div>
                                     </div>
                                   </div>
@@ -298,8 +302,8 @@
                                         <div id="totalVisitors" class="progressbar-js-circle pr-2"></div>
                                       </div>
                                       <div>
-                                        <p class="text-small mb-2">Voltaje promedio</p>
-                                        <h4 class="mb-0 fw-bold">{{media_medicion|floatformat:2}}</h4>
+                                        <p class="text-small mb-2" style="text-align: left;">Intensidad promedio</p>
+                                        <h4 class="mb-0 fw-bold" style="text-align: left;">{{media_intensidad|floatformat:2}}</h4>
                                       </div>
                                     </div>
                                   </div>
@@ -309,8 +313,8 @@
                                         <div id="visitperday" class="progressbar-js-circle pr-2"></div>
                                       </div>
                                       <div>
-                                        <p class="text-small mb-2">Intensidad promedio</p>
-                                        <h4 class="mb-0 fw-bold">{{media_intensidad|floatformat:2}}</h4>
+                                        <p class="text-small mb-2" style="text-align: left;">Desviacion de intensidad</p>
+                                        <h4 class="mb-0 fw-bold" style="text-align: left;">{{std_intensidad|floatformat:2}}</h4>
                                       </div>
                                     </div>
                                   </div>
@@ -328,8 +332,8 @@
                                         <div id="totalVisitors" class="progressbar-js-circle pr-2"></div>
                                       </div>
                                       <div>
-                                        <p class="text-small mb-2">Voltaje promedio</p>
-                                        <h4 class="mb-0 fw-bold">{{media_medicion|floatformat:2}}</h4>
+                                        <p class="text-small mb-2" style="text-align: left;">Corriente promedio</p>
+                                        <h4 class="mb-0 fw-bold" style="text-align: left;" >{{media_corriente|floatformat:2}}</h4>
                                       </div>
                                     </div>
                                   </div>
@@ -339,8 +343,8 @@
                                         <div id="visitperday" class="progressbar-js-circle pr-2"></div>
                                       </div>
                                       <div>
-                                        <p class="text-small mb-2">Intensidad promedio</p>
-                                        <h4 class="mb-0 fw-bold">{{media_intensidad|floatformat:2}}</h4>
+                                        <p class="text-small mb-2" style="text-align: left;">Desviación de corriente</p>
+                                        <h4 class="mb-0 fw-bold" style="text-align: left;">{{std_corriente|floatformat:2}}</h4>
                                       </div>
                                     </div>
                                   </div>

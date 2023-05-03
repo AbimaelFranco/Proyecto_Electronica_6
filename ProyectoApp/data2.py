@@ -1,14 +1,16 @@
 import psycopg2
 import pandas as pd
 import matplotlib.pyplot as plt
+from decouple import config
+
 
 # Establecer la conexión con la base de datos en PostgreSQL
 conn = psycopg2.connect(
-    dbname="proyecto_electronica_6",
-    user="postgres",
-    password="Km2_R#%Si",
-    host="127.0.0.1",
-    port="5432"
+    dbname= config('DB_NAME'),
+    user= config('DB_USER'),
+    password= config('DB_PASSWORD'),
+    host= config('DB_HOST'),
+    port= config('DB_PORT'),
 )
 
 # Consulta SQL para obtener los datos
