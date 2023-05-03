@@ -9,27 +9,24 @@ import os
 import pandas as pd
 import matplotlib.pyplot as plt
 from django.core.paginator import Paginator
+import random
+import time
 
-import random###############################
-import time#################################
-
+# Vista de pagina resumen
 def home(request):
 
+    # Obtencion de promedios, desviaciones y generacion de grafica de ultimas 24h
     media_intensidad, media_medicion, media_corriente, std_intensidad, std_medicion, std_corriente = data()
-
     generate_image()
     imagen = 'static/ProyectoApp/plots/mi_grafico.png'
-
     media_voltajelive = comprobar_en_vivo()
 
-    ################################################    
+    # Obtencion de ultimos datos
     entradas = static_panel.objects.all()
     ultima_entrada=[]
-    #print("################################################")
     if len(entradas)>1:
         for i in range(len(entradas)-1, len(entradas)):
             ultima_entrada.append(entradas[i])
-
 
     ultimo_elemento = ultima_entrada[0]
     ultima_hora = ultimo_elemento.date
@@ -38,6 +35,7 @@ def home(request):
     # datos()
     #################################################
 
+    # Obtencion de datos de usuario y generacion de mensaje
     username = getuser()
     hora = datetime.now()
     fecha = datetime.today()
@@ -66,12 +64,15 @@ def home(request):
         "media_voltajelive": media_voltajelive,
     })
 
+# Vista de pagina stream
 def graph_live(request):
 
+    # Obtencion de promedios, desviaciones y generacion de grafica de ultimas 24h
     media_voltaje, media_intensidad, media_corriente = generate_image4()
     imagen = 'static/ProyectoApp/plots/mi_grafico_live.png'
     media_voltajelive = comprobar_en_vivo()
 
+    # Obtencion de datos de usuario y generacion de mensaje
     username = getuser()
     hora = datetime.now()
     fecha = datetime.today()
@@ -94,14 +95,11 @@ def graph_live(request):
         "media_voltajelive":media_voltajelive,
     })
 
+# Vista de pagina estadisticas estatico
 def graph_history(request):
 
     media_voltaje, media_intensidad, media_corriente = generate_image2()
     imagen = 'static/ProyectoApp/plots/mi_grafico2.png'
-    # data = static_panel.objects.all()
-    # df = pd.DataFrame(list(data.values()))
-    # context = {'df': df.to_html(index=False)}
-    # print(df)
 
     # obtener todos los registros de la tabla StaticPanel
     static_panel_data = static_panel.objects.all().values('id', 'date', 'measurement', 'intensity', 'current')
@@ -141,8 +139,7 @@ def graph_history(request):
         "media_corriente": media_corriente,
         })
 
-    # return render(request, "ProyectoApp/template/history.html",context)
-
+# Vista de pagina estadisticas dinamico
 def graph_history2(request):
 
     media_voltaje, media_corriente = generate_image3()
@@ -151,8 +148,6 @@ def graph_history2(request):
     static_panel_data = dinamic_panel.objects.all().values('id', 'date', 'measurement', 'intensity1', 'intensity2', 'intensity3', 'intensity4', 'intensity5', 'intensity6', 'intensity7', 'intensity8', 'intensity9', 'current')
     # crear un dataframe de pandas con los datos obtenidos
     df = pd.DataFrame.from_records(static_panel_data)
-    # formatear la columna 'date' en formato día/mes/año hora:minutos
-    # df['date'] = pd.to_datetime(df['date']).dt.strftime('%d/%m/%Y %H:%M')
     # crear un objeto Paginator con los datos del dataframe
     paginator = Paginator(df.values.tolist(), 10)
     # obtener la página solicitada por el usuario
@@ -183,23 +178,21 @@ def graph_history2(request):
         "media_corriente": media_corriente,
         })
 
+# Vista de pagina de informacion
 def info(request):
     
     return render(request, "ProyectoApp/template/info.html",{})
 
-#####################################################################################
-###############Generacion de datos
+# Generacion de datos aleatorios
 def Voltaje():
 
     Voltaje = random.randint(1,5)
-    # print("Voltaje generado: ", Voltaje)
 
     return Voltaje
 
 def Intensidad():
 
     Intensidad = random.randint(1,15)
-    # print("Intensidad generado: ", Intensidad)
 
     return Intensidad
 
@@ -237,8 +230,7 @@ def datos2():
             generador_datos2(Volt, Inten1, Inten2, Inten3, Inten4, Inten5, Inten6, Inten7, Inten8, Inten9, Cu)
             time.sleep(10)
 
-############################################################################
-###############Generacion de Imagen Home
+# Generacion de imagen de resumen (ultimas 24h)
 def generate_image():
     # Establecer la conexión con la base de datos en PostgreSQL
     conn = psycopg2.connect(
@@ -250,7 +242,6 @@ def generate_image():
         )
 
     # Consulta SQL para obtener los datos
-    # consulta = 'SELECT date, measurement, intensity FROM "ProyectoApp_static_panel" ;'
     consulta = 'SELECT date, measurement, intensity, current FROM "ProyectoApp_static_panel" WHERE CAST(date AS DATE) = CURRENT_DATE;'
 
     # Leer los datos en un DataFrame de Pandas
@@ -262,9 +253,6 @@ def generate_image():
     # Convertir la columna 'date' a formato de fecha
     df['date'] = pd.to_datetime(df['date'])
     df['time'] = df['date'].dt.strftime('%H:%M:%S')
-    # df['time'] = df['date'].dt.time
-
-    # print(df['time'])
 
     # Obtener los puntos máximos de cada curva
     max_measurement_idx = df.groupby('intensity')['measurement'].idxmax()
@@ -277,17 +265,12 @@ def generate_image():
     plt.plot(df['time'], df['measurement'], label='Voltaje')
     plt.plot(df['time'], df['intensity'], label='Intensidad')
     plt.plot(df['time'], df['current'], label='Corriente')
-    # plt.scatter(max_measurement['date'], max_measurement['measurement'], color='red', label='Puntos máximos de Measurement')
-    # plt.scatter(max_intensity['date'], max_intensity['intensity'], color='green', label='Puntos máximos de Intensity')
     plt.xlabel('Fecha')
     plt.ylabel('Voltaje/Intensidad/Corriente')
     plt.title('Registro de Medición e Intensidad de hoy')
     plt.xticks(rotation=45)
     plt.legend()
     plt.grid(True)
-    # plt.show()
-
-    # ruta_archivo = 'static/ProyectoApp/plots/mi_grafico.png'
 
     ruta_archivo = 'C:/Users/asana/Desktop/Proyecto_E6/ProyectoApp/static/ProyectoApp/plots/mi_grafico.png'
 
@@ -299,8 +282,7 @@ def generate_image():
     # Guardar el gráfico en un archivo
     plt.savefig(ruta_archivo)
 
-############################################################################
-###############Generacion de Imagen panel estatico ultima hora
+# Generacion de imagen de estadisticas estaticas (1h)
 def generate_image2():
     # Establecer la conexión con la base de datos en PostgreSQL
     conn = psycopg2.connect(
@@ -310,10 +292,6 @@ def generate_image2():
             host= config('DB_HOST'),
             port= config('DB_PORT'),
         )
-
-    # Consulta SQL para obtener los datos
-    # consulta = 'SELECT date, measurement, intensity FROM "ProyectoApp_static_panel" ;'
-    # consulta = 'SELECT date, measurement, intensity, current FROM "ProyectoApp_static_panel" WHERE CAST(date AS DATE) = CURRENT_DATE;'
 
     # Obtener la hora actual
     now = datetime.now()
@@ -327,8 +305,6 @@ def generate_image2():
 
     # Consulta SQL para obtener los datos de la última hora
     consulta = f'SELECT date, measurement, intensity, current FROM "ProyectoApp_static_panel" WHERE date BETWEEN \'{one_hour_ago_formatted}\' AND \'{now_formatted}\';'
-    # print(consulta)
-    # consulta = 'SELECT date, measurement, intensity, current FROM "ProyectoApp_static_panel" ORDER BY date DESC LIMIT 10;'
 
     # Leer los datos en un DataFrame de Pandas
     df = pd.read_sql(consulta, conn)
@@ -343,34 +319,17 @@ def generate_image2():
     # Convertir la columna 'date' a formato de fecha
     df['date'] = pd.to_datetime(df['date'])
     df['time'] = df['date'].dt.strftime('%H:%M:%S')
-    # df['time'] = df['date'].dt.time
-
-    # print(df['time'])
-
-    # Obtener los puntos máximos de cada curva
-    max_measurement_idx = df.groupby('intensity')['measurement'].idxmax()
-    max_measurement = df.loc[max_measurement_idx, ['date', 'measurement', 'intensity']]
-    max_intensity_idx = df.groupby('measurement')['intensity'].idxmax()
-    max_intensity = df.loc[max_intensity_idx, ['date', 'measurement', 'intensity']]
-
+    
     # Graficar los datos
     plt.figure(figsize=(7, 7))
-    # plt.figure(figsize=(20, 10))
     plt.plot(df['time'], df['measurement'], label='Voltaje')
     plt.plot(df['time'], df['intensity'], label='Intensidad')
     plt.plot(df['time'], df['current'], label='Corriente')
-    # plt.scatter(max_measurement['date'], max_measurement['measurement'], color='red', label='Puntos máximos de Measurement')
-    # plt.scatter(max_intensity['date'], max_intensity['intensity'], color='green', label='Puntos máximos de Intensity')
-    # plt.xlabel('Fecha')
     plt.ylabel('Voltaje/Intensidad/Corriente')
     plt.title('Registro de Medición e Intensidad')
     plt.xticks(rotation=45)
     plt.legend()
     plt.grid(True)
-    # plt.show()
-
-    # ruta_archivo = 'static/ProyectoApp/plots/mi_grafico.png'
-
     ruta_archivo = 'C:/Users/asana/Desktop/Proyecto_E6/ProyectoApp/static/ProyectoApp/plots/mi_grafico2.png'
 
     # Verificar si el archivo ya existe
@@ -383,8 +342,7 @@ def generate_image2():
 
     return (media_voltaje, media_intensidad, media_corriente)
     
-############################################################################
-###############Generacion de Imagen panel dinamico ultima hora
+# Generacion de imagen de estadisticas dinamica (1h)
 def generate_image3():
     # Establecer la conexión con la base de datos en PostgreSQL
     conn = psycopg2.connect(
@@ -427,23 +385,11 @@ def generate_image3():
     media_intensidad9 = df["intensity9"].mean()
     media_corriente = df["current"].mean()
 
-    # Graficar los datos
-    # plt.figure(figsize=(12, 25))
-    # plt.plot('A', media_voltaje, label='Voltaje')
-    # plt.plot('B', media_intensidad1, label='Intensidad')
-    # plt.plot('C', media_corriente, label='Corriente')
-
-
     x = ['Voltaje', 'Intensidad 1', 'Intensidad 2', 'Intensidad 3', 'Intensidad 4', 'Intensidad 5', 'Intensidad 6', 'Intensidad 7', 'Intensidad 8', 'Intensidad 9', 'Corriente']
     y = [media_voltaje, media_intensidad1, media_intensidad2, media_intensidad3, media_intensidad4, media_intensidad5, media_intensidad6, media_intensidad7, media_intensidad8, media_intensidad9, media_corriente]
     colores = ['#173541', '#1E4554', '#245467', '#2A647B', '#30748E', '#3684A2', '#3C93B5', '#47A1C3', '#5AABCA', '#6DB5D1', '#6DB5D1']
 
-    # fig, ax = plt.subplots(figsize=(20, 10))
     fig, ax = plt.subplots(figsize=(7, 7))
-
-
-    # fig, ax = plt.subplots()
-
     # Crear el gráfico de barras
     bars = ax.bar(x, y, color=colores)
 
@@ -455,13 +401,7 @@ def generate_image3():
         height = bar.get_height()
         ax.text(bar.get_x() + bar.get_width() / 2, height, str(f"{height:.2f}"), ha='center', va='bottom')
 
-
-    # plt.xlabel('Medición')
-    # plt.ylabel('Valor romedio')
-    # plt.title('Registro de Medición e Intensidad de hoy')
     plt.xticks(rotation=45)
-    # # plt.legend()
-    # plt.grid(True)
 
     ruta_archivo = 'C:/Users/asana/Desktop/Proyecto_E6/ProyectoApp/static/ProyectoApp/plots/mi_grafico3.png'
 
@@ -475,8 +415,7 @@ def generate_image3():
 
     return (media_voltaje, media_corriente)
 
-############################################################################
-###############Generacion de Live
+# Generacion de imagen de stream (5m)
 def generate_image4():
     # Establecer la conexión con la base de datos en PostgreSQL
     conn = psycopg2.connect(
@@ -486,10 +425,6 @@ def generate_image4():
             host= config('DB_HOST'),
             port= config('DB_PORT'),
         )
-
-    # Consulta SQL para obtener los datos
-    # consulta = 'SELECT date, measurement, intensity FROM "ProyectoApp_static_panel" ;'
-    # consulta = 'SELECT date, measurement, intensity, current FROM "ProyectoApp_static_panel" WHERE CAST(date AS DATE) = CURRENT_DATE;'
 
     # Obtener la hora actual
     now = datetime.now()
@@ -517,9 +452,6 @@ def generate_image4():
     # Convertir la columna 'date' a formato de fecha
     df['date'] = pd.to_datetime(df['date'])
     df['time'] = df['date'].dt.strftime('%H:%M:%S')
-    # df['time'] = df['date'].dt.time
-
-    # print(df['time'])
 
     # Obtener los puntos máximos de cada curva
     max_measurement_idx = df.groupby('intensity')['measurement'].idxmax()
@@ -529,21 +461,15 @@ def generate_image4():
 
     # Graficar los datos
     plt.figure(figsize=(12, 7))
-    # plt.figure(figsize=(20, 10))
     plt.plot(df['time'], df['measurement'], label='Voltaje')
     plt.plot(df['time'], df['intensity'], label='Intensidad')
     plt.plot(df['time'], df['current'], label='Corriente')
-    # plt.scatter(max_measurement['date'], max_measurement['measurement'], color='red', label='Puntos máximos de Measurement')
-    # plt.scatter(max_intensity['date'], max_intensity['intensity'], color='green', label='Puntos máximos de Intensity')
     plt.xlabel('Fecha')
     plt.ylabel('Voltaje/Intensidad/Corriente')
     plt.title('Registro de Medición e Intensidad')
     plt.xticks(rotation=45)
     plt.legend()
     plt.grid(True)
-    # plt.show()
-
-    # ruta_archivo = 'static/ProyectoApp/plots/mi_grafico.png'
 
     ruta_archivo = 'C:/Users/asana/Desktop/Proyecto_E6/ProyectoApp/static/ProyectoApp/plots/mi_grafico_live.png'
 
@@ -556,7 +482,8 @@ def generate_image4():
     plt.savefig(ruta_archivo)
 
     return (media_voltaje, media_intensidad, media_corriente)
-  
+
+# Comprobacion de ingreso de datos en ultimo 3m
 def comprobar_en_vivo():
     # Establecer la conexión con la base de datos en PostgreSQL
     conn = psycopg2.connect(
@@ -567,16 +494,11 @@ def comprobar_en_vivo():
             port= config('DB_PORT'),
         )
 
-    # Consulta SQL para obtener los datos
-    # consulta = 'SELECT date, measurement, intensity FROM "ProyectoApp_static_panel" ;'
-    # consulta = 'SELECT date, measurement, intensity, current FROM "ProyectoApp_static_panel" WHERE CAST(date AS DATE) = CURRENT_DATE;'
-
     # Obtener la hora actual
     now = datetime.now()
 
     # Restar una hora a la hora actual para obtener la hora hace una hora
     one_hour_ago = now - timedelta(hours=.05)
-    # now = now + timedelta(hours=5.95)
 
     # Formatear las fechas para usarlas en la consulta SQL
     now_formatted = now.strftime("%Y-%m-%d %H:%M:%S")
@@ -593,7 +515,5 @@ def comprobar_en_vivo():
     conn.close()
 
     media_voltaje = df["measurement"].mean()
-    # print("Voltaje promedio de ultimos minutos", media_voltaje)
 
-    return (media_voltaje)
-  
+    return (media_voltaje)  
